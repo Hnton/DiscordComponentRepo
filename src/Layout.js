@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import type { Node } from "react";
 import { Link } from "@reach/router";
 
