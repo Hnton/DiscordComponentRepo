@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import moment from "moment";
-import { StaticGoogleMap, Marker, Path } from "react-static-google-map";
+import { StaticGoogleMap } from "react-static-google-map";
 
 import { Button, Input, List } from "semantic-ui-react";
 
@@ -48,11 +48,6 @@ function Discode({ comments, editComment, state, setState, deleteComment }) {
                       className="img-fluid"
                       apiKey="AIzaSyCFZkFv8bjgP-R9-sg6fQ3mSLFEJXPI6eI"
                     >
-                      <Marker
-                        location={comment.text.substr(2)}
-                        color="blue"
-                        label="P"
-                      />
                     </StaticGoogleMap>
                   }
                 </List.Header>
