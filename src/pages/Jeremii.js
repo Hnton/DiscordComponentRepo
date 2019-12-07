@@ -1,28 +1,40 @@
 import React, { useState } from "react";
 import moment from "moment";
-import { StaticGoogleMap } from "react-static-google-map";
+import { StaticGoogleMap, Marker } from "react-static-google-map";
 
-import { Button, Input, List } from "semantic-ui-react";
+import { List } from "semantic-ui-react";
+import { Input, Button } from "@material-ui/core";
 
-function Discode({ comments, editComment, state, setState, deleteComment }) {
+function Discode({
+  comments,
+  editComment,
+  state,
+  setState,
+  deleteComment,
+  value
+}) {
   return (
     <List divided relaxed>
       {comments.map(comment => {
         if (comment.id === state.commentId) {
           return (
-            <List.Item>
+            <List.Item style={{ marginBottom: "1em" }}>
               <List.Content>
                 <List.Header as="a">
                   <Input
                     value={state.editValue}
-                    onChange={(event, { value }) => {
+                    onChange={event => {
                       setState({
                         ...state,
-                        value: value
+                        value: event.target.value
                       });
                     }}
                   />
-                  <Button primary onClick={editComment}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={editComment}
+                  >
                     Save
                   </Button>
                 </List.Header>
@@ -31,7 +43,7 @@ function Discode({ comments, editComment, state, setState, deleteComment }) {
           );
         } else if (comment.text.substr(0, 2) === "//") {
           return (
-            <List.Item>
+            <List.Item style={{ marginBottom: "1em" }}>
               <List.Content>
                 <List.Header
                   as="a"
@@ -44,14 +56,25 @@ function Discode({ comments, editComment, state, setState, deleteComment }) {
                 >
                   {
                     <StaticGoogleMap
-                      size="320x160"
+                      size="390x180"
                       className="img-fluid"
                       apiKey="AIzaSyCFZkFv8bjgP-R9-sg6fQ3mSLFEJXPI6eI"
                     >
+                      <Marker
+                        location={comment.text.substr(2)}
+                        color="blue"
+                        label="Here"
+                      />
                     </StaticGoogleMap>
                   }
                 </List.Header>
-                <Button primary onClick={() => deleteComment(comment.id)}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="small"
+                  style={{ float: "right" }}
+                  onClick={() => deleteComment(comment.id)}
+                >
                   Delete
                 </Button>
               </List.Content>
@@ -59,7 +82,7 @@ function Discode({ comments, editComment, state, setState, deleteComment }) {
           );
         } else {
           return (
-            <List.Item>
+            <List.Item style={{ marginBottom: "1em" }}>
               <List.Content>
                 <List.Header
                   as="a"
@@ -70,9 +93,25 @@ function Discode({ comments, editComment, state, setState, deleteComment }) {
                     });
                   }}
                 >
-                  {comment.text + " " + moment(comment.time, "ss").fromNow()}
+                  <span
+                    style={{
+                      fontSize: "0.65em",
+                      color: "gray",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    {moment(comment.time, "ss").fromNow()}
+                  </span>
+                  <br />
+                  {comment.text}
                 </List.Header>
-                <Button primary onClick={() => deleteComment(comment.id)}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="small"
+                  onClick={() => deleteComment(comment.id)}
+                  style={{ float: "right" }}
+                >
                   Delete
                 </Button>
               </List.Content>
@@ -108,7 +147,6 @@ function Jeremii() {
     if (text.substr(0, 2) === "//") {
       //https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyBu5Lpr1d925-aXmjPKoHF5U737meWbSOg
       // 300 campus drive, parkersburg, wv
-      text = text.replace(/\s/g, "+");
     }
     return setInputText(text);
   };
@@ -117,6 +155,7 @@ function Jeremii() {
     var coord = "";
     if (inputText.substr(0, 2) === "//") {
       var address = inputText.substr(2);
+      address = address.replace(/\s/g, "+");
       //address = "1600+Amphitheatre+Parkway,+Mountain+View,+CA";
       //300+campus+drive,+parkersburg,+wv
       const response = await fetch(
@@ -130,7 +169,7 @@ function Jeremii() {
     }
     const newComment = {
       id: new Date().getMilliseconds(),
-      text: coord,
+      text: coord !== "" ? coord : inputText,
       time: new Date()
     };
     setComments([...comments, newComment]);
@@ -156,27 +195,50 @@ function Jeremii() {
   };
   return (
     <div>
-      <header>
-        <h1>Discord</h1>
-      </header>
-      <Discode
-        deleteComment={deleteComment}
-        editComment={editComment}
-        comments={comments}
-        state={state}
-        setState={setState}
-      />
-      <form method="POST" onSubmit={addComment}>
-        <input
-          type="text"
-          placeholder="Say something..."
-          value={inputText}
-          onChange={e => {
-            checkWidget(e.target.value);
-          }}
+      <div
+        style={{
+          width: "50%",
+          margin: "0 auto",
+          paddingRight: "2em",
+          paddingLeft: "2em",
+          borderRight: "solid 1px lightgray",
+          borderLeft: "solid 1px lightgray"
+        }}
+      >
+        <header>
+          <h1 style={{ marginBottom: "0em" }}>Discord</h1>
+          <h4 style={{ marginTop: "0em", color: "gray" }}>Final</h4>
+        </header>
+        <Discode
+          deleteComment={deleteComment}
+          editComment={editComment}
+          comments={comments}
+          state={state}
+          setState={setState}
         />
-        <Button type="submit">Send</Button>
-      </form>
+        <br />
+        <br />
+        <form method="POST" onSubmit={addComment}>
+          <Input
+            style={{ width: "400px", marginRight: "1em" }}
+            type="text"
+            placeholder="Say something..."
+            value={inputText}
+            onChange={e => {
+              checkWidget(e.target.value);
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            type="submit"
+            style={{ float: "right" }}
+          >
+            Send
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }
