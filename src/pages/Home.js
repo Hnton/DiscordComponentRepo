@@ -4,132 +4,13 @@ import { StaticGoogleMap, Marker } from "react-static-google-map";
 
 import { List } from "semantic-ui-react";
 import { Input, Button } from "@material-ui/core";
-import { Link, Redirect } from "@reach/router";
-
-function Discode({
-  comments,
-  editComment,
-  state,
-  setState,
-  deleteComment,
-  value
-}) {
-  return (
-    <List divided relaxed>
-      {comments.map(comment => {
-        if (comment.id === state.commentId) {
-          return (
-            <List.Item style={{ marginBottom: "1em" }}>
-              <List.Content>
-                <List.Header as="a">
-                  <Input
-                    value={state.editValue}
-                    onChange={event => {
-                      setState({
-                        ...state,
-                        value: event.target.value
-                      });
-                    }}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={editComment}
-                  >
-                    Save
-                  </Button>
-                </List.Header>
-              </List.Content>
-            </List.Item>
-          );
-        } else if (comment.text.substr(0, 2) === "//") {
-          return (
-            <List.Item style={{ marginBottom: "1em" }}>
-              <List.Content>
-                <List.Header
-                  as="a"
-                  onClick={() => {
-                    setState({
-                      commentId: comment.id,
-                      value: comment.text
-                    });
-                  }}
-                >
-                  {
-                    <StaticGoogleMap
-                      size="390x180"
-                      className="img-fluid"
-                      apiKey="AIzaSyCFZkFv8bjgP-R9-sg6fQ3mSLFEJXPI6eI"
-                    >
-                      <Marker
-                        location={comment.text.substr(2)}
-                        color="blue"
-                        label="Here"
-                      />
-                    </StaticGoogleMap>
-                  }
-                </List.Header>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  style={{ float: "right" }}
-                  onClick={() => deleteComment(comment.id)}
-                >
-                  Delete
-                </Button>
-              </List.Content>
-            </List.Item>
-          );
-        } else if (comment.text === "/Weather" || comment.text === "/weather" ) {
-          return (
-            <Redirect to="/Mikael"></Redirect>
-          );
-        }
-         else {
-          return (
-            <List.Item style={{ marginBottom: "1em" }}>
-              <List.Content>
-                <List.Header
-                  as="a"
-                  onClick={() => {
-                    setState({
-                      commentId: comment.id,
-                      value: comment.text
-                    });
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.65em",
-                      color: "gray",
-                      fontWeight: "bold"
-                    }}
-                  >
-                    {moment(comment.time, "ss").fromNow()}
-                  </span>
-                  <br />
-                  {comment.text}
-                </List.Header>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  onClick={() => deleteComment(comment.id)}
-                  style={{ float: "right" }}
-                >
-                  Delete
-                </Button>
-              </List.Content>
-            </List.Item>
-          );
-        }
-      })}
-    </List>
-  );
-}
 
 function Home() {
+  const magicKey = "//";
+  const magicKeyClosure = "=";
+  const mapWidgetFullname = magicKey + "map" + magicKeyClosure;
+  const weatherWidgetFullname = magicKey + "weather" + magicKeyClosure;
+
   const [inputText, setInputText] = useState("");
   const [state, setState] = useState({
     commentId: null,
@@ -156,11 +37,84 @@ function Home() {
     }
     return setInputText(text);
   };
+  const [weatherData, setWeatherData] = useState({
+    temperature: null,
+    city: null,
+    country: null,
+    humidity: null,
+    description: null
+  });
+  // Weather Info that gets displayed to screen
+  const Weather = () => (
+    <div>
+      {/* Displays City & Country */}
+      {weatherData.city && weatherData.country && (
+        <p>
+          {" "}
+          Location:
+          <span>
+            {" "}
+            {weatherData.city}, {weatherData.country}
+          </span>
+        </p>
+      )}
+      {/* Displays Temperature */}
+      {weatherData.temperature && (
+        <p>
+          {" "}
+          Temperature:
+          <span> {weatherData.temperature} </span>
+        </p>
+      )}
+      {/* Displays Humidity */}
+      {weatherData.humidity && (
+        <p>
+          {" "}
+          Humidity:
+          <span> {weatherData.humidity} </span>
+        </p>
+      )}
+      {/* Displays Condition "Raining, Clear, etc..." */}
+      {weatherData.description && (
+        <p>
+          {" "}
+          Conditions:
+          <span> {weatherData.description} </span>
+        </p>
+      )}
+      {/* Displays Error Message If City or Country is does not have inpput */}
+      {weatherData.error && <p>{weatherData.error}</p>}
+    </div>
+  );
+  const WEATHER_API_KEY = "24396b8bf0c1aae21ca0fbcea7e97dff";
+  const getWeather = async (city, country) => {
+    const api_call = await fetch(
+      `http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${WEATHER_API_KEY}&units=imperial`
+    );
+    if (city === "" && country === "") {
+      return;
+    }
+    const data = await api_call.json();
+    console.log(data);
+    setWeatherData({
+      temperature: data.main.temp,
+      city: data.name,
+      country: data.sys.country,
+      humidity: data.main.humidity,
+      description: data.weather[0].description,
+      error: ""
+    });
+  };
+
   const addComment = async e => {
     e.preventDefault();
-    var coord = "";
-    if (inputText.substr(0, 2) === "//") {
-      var address = inputText.substr(2);
+    var textData = "";
+
+    if (
+      inputText.substr(0, mapWidgetFullname.length).toLowerCase() ===
+      mapWidgetFullname
+    ) {
+      var address = inputText.substr(weatherWidgetFullname.length);
       address = address.replace(/\s/g, "+");
       //address = "1600+Amphitheatre+Parkway,+Mountain+View,+CA";
       //300+campus+drive,+parkersburg,+wv
@@ -170,13 +124,27 @@ function Home() {
       const jason = await response.json();
       const lat = JSON.stringify(jason.results[0].geometry.location.lat);
       const lng = JSON.stringify(jason.results[0].geometry.location.lng);
-      coord = `//${lat},${lng}`;
+      textData = `${mapWidgetFullname}${lat},${lng}`;
       //https://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=400x400&key=
+    }
+
+    // WEATHER WIDGET
+    //weather:new york,USA
+    if (
+      inputText.substr(0, weatherWidgetFullname.length).toLowerCase() ===
+      weatherWidgetFullname
+    ) {
+      var locale = inputText.substr(weatherWidgetFullname.length);
+      var city = locale.split(",")[0];
+      var country = locale.split(",")[1];
+      getWeather(city, country);
+
+      textData = `${weatherWidgetFullname}${city},${country}`;
     }
 
     const newComment = {
       id: new Date().getMilliseconds(),
-      text: coord !== "" ? coord : inputText,
+      text: textData !== "" ? textData : inputText,
       time: new Date()
     };
     setComments([...comments, newComment]);
@@ -216,18 +184,157 @@ function Home() {
           <h1 style={{ marginBottom: "0em" }}>Discord</h1>
           <h4 style={{ marginTop: "0em", color: "gray" }}>Home</h4>
         </header>
-        <Discode
-          deleteComment={deleteComment}
-          editComment={editComment}
-          comments={comments}
-          state={state}
-          setState={setState}
-        />
+        <List divided relaxed>
+          {comments.map(comment => {
+            if (comment.id === state.commentId) {
+              return (
+                <List.Item style={{ marginBottom: "1em" }}>
+                  <List.Content>
+                    <List.Header as="a">
+                      <Input
+                        value={state.editValue}
+                        onChange={event => {
+                          setState({
+                            ...state,
+                            value: event.target.value
+                          });
+                        }}
+                      />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={editComment}
+                      >
+                        Save
+                      </Button>
+                    </List.Header>
+                  </List.Content>
+                </List.Item>
+              );
+            } else if (
+              comment.text.substr(0, mapWidgetFullname.length) ===
+              mapWidgetFullname
+            ) {
+              return (
+                <List.Item style={{ marginBottom: "1em" }}>
+                  <List.Content>
+                    <List.Header
+                      as="a"
+                      onClick={() => {
+                        setState({
+                          commentId: comment.id,
+                          value: comment.text
+                        });
+                      }}
+                    >
+                      {
+                        <StaticGoogleMap
+                          size="390x180"
+                          className="img-fluid"
+                          apiKey="AIzaSyCFZkFv8bjgP-R9-sg6fQ3mSLFEJXPI6eI"
+                        >
+                          <Marker
+                            location={comment.text.substr(mapWidgetFullname)}
+                            color="blue"
+                            label="Here"
+                          />
+                        </StaticGoogleMap>
+                      }
+                    </List.Header>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      style={{ float: "right" }}
+                      onClick={() => deleteComment(comment.id)}
+                    >
+                      Delete
+                    </Button>
+                  </List.Content>
+                </List.Item>
+              );
+            } else if (
+              comment.text.substr(0, weatherWidgetFullname.length) ===
+              weatherWidgetFullname
+            ) {
+              return (
+                <List.Item style={{ marginBottom: "1em" }}>
+                  <List.Content>
+                    <List.Header
+                      as="a"
+                      style={{ width: "100%" }}
+                      onClick={() => {
+                        setState({
+                          commentId: comment.id,
+                          value: comment.text
+                        });
+                      }}
+                    >
+                      <Weather
+                        temperature={weatherData.temperature}
+                        humidity={weatherData.humidity}
+                        city={weatherData.city}
+                        country={weatherData.country}
+                        description={weatherData.description}
+                        error={weatherData.error}
+                      />
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        onClick={() => deleteComment(comment.id)}
+                      >
+                        Delete
+                      </Button>
+                    </List.Header>
+                  </List.Content>
+                </List.Item>
+              );
+            } else {
+              return (
+                <List.Item style={{ marginBottom: "1em" }}>
+                  <List.Content>
+                    <List.Header
+                      as="a"
+                      onClick={() => {
+                        setState({
+                          commentId: comment.id,
+                          value: comment.text
+                        });
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.65em",
+                          color: "gray",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        {moment(comment.time, "ss").fromNow()}
+                      </span>
+                      <br />
+                      {comment.text}
+                    </List.Header>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      onClick={() => deleteComment(comment.id)}
+                      style={{ float: "right" }}
+                    >
+                      Delete
+                    </Button>
+                  </List.Content>
+                </List.Item>
+              );
+            }
+          })}
+        </List>
         <br />
         <br />
         <form method="POST" onSubmit={addComment}>
           <Input
-            style={{ width: "400px", marginRight: "1em" }}
+            style={{ width: "75%", marginRight: "1em" }}
             type="text"
             placeholder="Say something..."
             value={inputText}
@@ -244,9 +351,7 @@ function Home() {
           >
             Send
           </Button>
-          
         </form>
-        
       </div>
     </div>
   );

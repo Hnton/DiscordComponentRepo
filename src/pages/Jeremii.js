@@ -4,7 +4,7 @@ import { StaticGoogleMap, Marker } from "react-static-google-map";
 
 import { List } from "semantic-ui-react";
 import { Input, Button } from "@material-ui/core";
-import { Link, Redirect } from "@reach/router";
+import { Redirect } from "@reach/router";
 
 function Discode({
   comments,
@@ -81,12 +81,9 @@ function Discode({
               </List.Content>
             </List.Item>
           );
-        } else if (comment.text === "/Weather" || comment.text === "/weather" ) {
-          return (
-            <Redirect to="/Mikael"></Redirect>
-          );
-        }
-         else {
+        } else if (comment.text === "/Weather" || comment.text === "/weather") {
+          return <Redirect to="/Mikael"></Redirect>;
+        } else {
           return (
             <List.Item style={{ marginBottom: "1em" }}>
               <List.Content>
@@ -244,9 +241,7 @@ function Home() {
           >
             Send
           </Button>
-          
         </form>
-        
       </div>
     </div>
   );
