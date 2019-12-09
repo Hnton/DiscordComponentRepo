@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { Router } from "@reach/router";
-import { Home, Jeremii } from "./pages";
+import { Home, Jeremii, Mikael } from "./pages";
 import Layout from "./Layout";
 
 export default () => (
@@ -9,6 +9,7 @@ export default () => (
     <Layout path="/">
       <Home path="/" />
       <Jeremii path="jeremii" />
+      <Mikael path="Mikael" />
     </Layout>
   </Router>
 );

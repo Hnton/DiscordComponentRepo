@@ -4,6 +4,7 @@ import { StaticGoogleMap, Marker } from "react-static-google-map";
 
 import { List } from "semantic-ui-react";
 import { Input, Button } from "@material-ui/core";
+import { Link, Redirect } from "@reach/router";
 
 function Discode({
   comments,
@@ -80,7 +81,12 @@ function Discode({
               </List.Content>
             </List.Item>
           );
-        } else {
+        } else if (comment.text === "/Weather" || comment.text === "/weather" ) {
+          return (
+            <Redirect to="/Mikael"></Redirect>
+          );
+        }
+         else {
           return (
             <List.Item style={{ marginBottom: "1em" }}>
               <List.Content>
@@ -123,7 +129,7 @@ function Discode({
   );
 }
 
-function Jeremii() {
+function Home() {
   const [inputText, setInputText] = useState("");
   const [state, setState] = useState({
     commentId: null,
@@ -167,6 +173,7 @@ function Jeremii() {
       coord = `//${lat},${lng}`;
       //https://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=400x400&key=
     }
+
     const newComment = {
       id: new Date().getMilliseconds(),
       text: coord !== "" ? coord : inputText,
@@ -207,7 +214,7 @@ function Jeremii() {
       >
         <header>
           <h1 style={{ marginBottom: "0em" }}>Discord</h1>
-          <h4 style={{ marginTop: "0em", color: "gray" }}>Final</h4>
+          <h4 style={{ marginTop: "0em", color: "gray" }}>Home</h4>
         </header>
         <Discode
           deleteComment={deleteComment}
@@ -237,10 +244,12 @@ function Jeremii() {
           >
             Send
           </Button>
+          
         </form>
+        
       </div>
     </div>
   );
 }
 
-export default Jeremii;
+export default Home;
