@@ -98,7 +98,7 @@ const Form = props => (
             Get Weather
         </Button>
 
-        <Link to="/jeremii">
+        <Link to="/">
             <Button
             variant="contained"
             color="primary"
