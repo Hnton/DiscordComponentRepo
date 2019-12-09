@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import moment from "moment";
-<<<<<<< HEAD
 import { StaticGoogleMap, Marker } from "react-static-google-map";
 
 import { List } from "semantic-ui-react";
@@ -14,27 +13,16 @@ function Discode({
   deleteComment,
   value
 }) {
-=======
-
-import { Button, Input, List } from "semantic-ui-react";
-
-function Discode({ comments, editComment, state, setState, deleteComment }) {
->>>>>>> parent of a40f9871... Update
   return (
     <List divided relaxed>
       {comments.map(comment => {
         if (comment.id === state.commentId) {
           return (
-<<<<<<< HEAD
             <List.Item style={{ marginBottom: "1em" }}>
-=======
-            <List.Item>
->>>>>>> parent of a40f9871... Update
               <List.Content>
                 <List.Header as="a">
                   <Input
                     value={state.editValue}
-<<<<<<< HEAD
                     onChange={event => {
                       setState({
                         ...state,
@@ -47,23 +35,12 @@ function Discode({ comments, editComment, state, setState, deleteComment }) {
                     color="primary"
                     onClick={editComment}
                   >
-=======
-                    onChange={(event, { value }) => {
-                      setState({
-                        ...state,
-                        value: value
-                      });
-                    }}
-                  />
-                  <Button primary onClick={editComment}>
->>>>>>> parent of a40f9871... Update
                     Save
                   </Button>
                 </List.Header>
               </List.Content>
             </List.Item>
           );
-<<<<<<< HEAD
         } else if (comment.text.substr(0, 2) === "//") {
           return (
             <List.Item style={{ marginBottom: "1em" }}>
@@ -141,30 +118,6 @@ function Discode({ comments, editComment, state, setState, deleteComment }) {
             </List.Item>
           );
         }
-=======
-        }
-
-        return (
-          <List.Item>
-            <List.Content>
-              <List.Header
-                as="a"
-                onClick={() => {
-                  setState({
-                    commentId: comment.id,
-                    value: comment.text
-                  });
-                }}
-              >
-                {comment.text + " " + moment(comment.time, "ss").fromNow()}
-              </List.Header>
-              <Button primary onClick={() => deleteComment(comment.id)}>
-                Delete
-              </Button>
-            </List.Content>
-          </List.Item>
-        );
->>>>>>> parent of a40f9871... Update
       })}
     </List>
   );
@@ -188,7 +141,6 @@ function Jeremii() {
       time: moment(new Date()).subtract("10", "mins")
     }
   ]);
-<<<<<<< HEAD
   const checkWidget = async text => {
     setInputText(text);
 
@@ -218,13 +170,6 @@ function Jeremii() {
     const newComment = {
       id: new Date().getMilliseconds(),
       text: coord !== "" ? coord : inputText,
-=======
-  const addComment = e => {
-    e.preventDefault();
-    const newComment = {
-      id: new Date().getMilliseconds(),
-      text: inputText,
->>>>>>> parent of a40f9871... Update
       time: new Date()
     };
     setComments([...comments, newComment]);
@@ -249,7 +194,6 @@ function Jeremii() {
     setComments(newComments);
   };
   return (
-<<<<<<< HEAD
     <div>
       <div
         style={{
@@ -265,13 +209,6 @@ function Jeremii() {
           <h1 style={{ marginBottom: "0em" }}>Discord</h1>
           <h4 style={{ marginTop: "0em", color: "gray" }}>Final</h4>
         </header>
-=======
-    <div className="App">
-      <header>
-        <h1>Dis-code</h1>
-      </header>
-      <body>
->>>>>>> parent of a40f9871... Update
         <Discode
           deleteComment={deleteComment}
           editComment={editComment}
@@ -279,7 +216,6 @@ function Jeremii() {
           state={state}
           setState={setState}
         />
-<<<<<<< HEAD
         <br />
         <br />
         <form method="POST" onSubmit={addComment}>
@@ -303,18 +239,6 @@ function Jeremii() {
           </Button>
         </form>
       </div>
-=======
-        <form method="POST" onSubmit={addComment}>
-          <input
-            type="text"
-            placeholder="Say something..."
-            value={inputText}
-            onChange={e => setInputText(e.target.value)}
-          />
-          <Button type="submit">Send</Button>
-        </form>
-      </body>
->>>>>>> parent of a40f9871... Update
     </div>
   );
 }

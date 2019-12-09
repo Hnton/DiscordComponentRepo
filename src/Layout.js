@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React from "react";
-=======
-import React, { useState, useEffect } from "react";
->>>>>>> parent of a40f9871... Update
 import type { Node } from "react";
 import { Link } from "@reach/router";
 
