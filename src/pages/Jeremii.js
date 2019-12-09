@@ -244,4 +244,3 @@ function Jeremii() {
 }
 
 export default Jeremii;
-  
